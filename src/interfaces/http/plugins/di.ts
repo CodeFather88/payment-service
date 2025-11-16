@@ -1,9 +1,25 @@
-import { Elysia, type Context } from "elysia";
+import { Elysia } from "elysia";
 import { PaymentService } from "../../../application/PaymentService";
 import { InMemoryEventStore } from "../../../infrastructure/InMemoryEventStore";
+import { env } from "../../../configs";
 
+/**
+ * DI контейнер создает синглтоны для всего приложения
+ */
+const eventStore = new InMemoryEventStore();
+const paymentService = new PaymentService(eventStore, env.paymentLinkDomain);
+
+/**
+ * DI плагин для внедрения зависимостей
+ */
 export const di = new Elysia({ name: "di" })
-  .state("eventStore", new InMemoryEventStore())
-  .decorate("paymentService", (ctx: Context & { eventStore: InMemoryEventStore }) => {
-    return new PaymentService(ctx.eventStore);
-  })
+	.decorate("eventStore", eventStore)
+	.decorate("paymentService", paymentService);
+
+/**
+ * Тип для извлечения декораторов из плагина
+ */
+export type DIDecorators = {
+	eventStore: InMemoryEventStore;
+	paymentService: PaymentService;
+};

@@ -1,7 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { PaymentEvent } from './types';
 import { Result, Ok, Err } from '../shared/Result';
-import { env } from '../../configs';
 
 type Status = 'created' | 'link_ready' | 'client_redirected' | 'success' | 'failed' | 'expired';
 
@@ -39,7 +38,7 @@ export class Payment {
       return Err(new Error('Сумма должна быть положительной'));
     }
     if (!/^[A-Z]{3}$/.test(currency)) {
-      return Err(new Error('Валюта должна быть в формате ISO 4217, например: RUB'));
+      return Err(new Error('Неверный формат валюты. Пример: RUB'));
     }
 
     const payment = new Payment(uuidv4(), amount, currency, description);
@@ -80,7 +79,7 @@ export class Payment {
       payload.description as string | undefined
     );
 
-    // Применяем все события, начиная со второго
+    // Применение всех событий, начиная со второго
     for (let i = 1; i < events.length; i++) {
       const result = payment.appendEvent(events[i]);
       if (result.kind === 'err') {
@@ -88,8 +87,8 @@ export class Payment {
       }
     }
 
-    // Копируем события (включая первое)
-    payment.events.push(...events);
+    // Первое событие добавляем вручную, т.к. оно не проходило через appendEvent
+    payment.events.unshift(events[0]);
     return Ok(payment);
   }
 
@@ -112,7 +111,7 @@ export class Payment {
     // Применение эффекта события
     this.apply(fullEvent);
     this.events.push(fullEvent);
-    return Ok(undefined);
+    return Ok();
   }
 
   // Применение эффекта события на состояние
@@ -138,12 +137,15 @@ export class Payment {
     }
   }
 
-  //генерацмя ссылки
-  generateLink(): Result<PaymentEvent, Error> {
+  /**
+   * Генерация ссылки для оплаты
+   * @param paymentLinkDomain - базовый URL для формирования ссылки
+   */
+  generateLink(paymentLinkDomain: string): Result<PaymentEvent, Error> {
     const result = this.appendEvent({
       type: 'payment_link_generated',
       timestamp: new Date(),
-      payload: { link: `${env.paymentLinkDomain}/${this.id}` }
+      payload: { link: `${paymentLinkDomain}/${this.id}` }
     });
 
     return result.kind === 'ok'

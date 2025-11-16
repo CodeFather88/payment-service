@@ -2,9 +2,13 @@ import { Payment } from '../domain/Payment';
 import { PaymentEvent } from '../domain/types';
 import { InMemoryEventStore } from '../infrastructure/InMemoryEventStore';
 import { Result, Ok, Err } from '../shared/Result';
+import { PaymentHistoryResponse } from './types';
 
 export class PaymentService {
-    constructor(private readonly eventStore: InMemoryEventStore) { }
+    constructor(
+        private readonly eventStore: InMemoryEventStore,
+        private readonly paymentLinkDomain: string
+    ) { }
 
     /**
     * Создать платёж
@@ -46,8 +50,8 @@ export class PaymentService {
 
         const payment = paymentResult.value;
 
-        // Пытаемся сгенерировать ссылку
-        const linkResult = payment.generateLink();
+        // генерация ссылки
+        const linkResult = payment.generateLink(this.paymentLinkDomain);
         if (linkResult.kind === 'err') {
             return linkResult;
         }
@@ -87,13 +91,13 @@ export class PaymentService {
         if (result.kind === 'err') return result;
 
         this.eventStore.append(result.value);
-        return Ok(undefined);
+        return Ok();
     }
 
     /**
-    * Получить историю платежа (для API)
+    * Получить историю платежа
     */
-    getHistory(paymentId: string): Result<any, Error> {
+    getHistory(paymentId: string): Result<PaymentHistoryResponse, Error> {
         if (!this.eventStore.hasPayment(paymentId)) {
             return Err(new Error('Платёж не найден'));
         }

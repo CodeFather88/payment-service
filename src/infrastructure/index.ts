@@ -1,0 +1,2 @@
+export { InMemoryEventStore } from './InMemoryEventStore';
+
