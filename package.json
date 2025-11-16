@@ -9,7 +9,6 @@
 	"scripts": {
 		"dev": "tsx src/server.ts",
 		"build": "tsc",
-		"start": "node dist/server.js",
 		"test": "node --import tsx --test tests/domain/Payment.test.ts tests/application/PaymentService.test.ts"
 	},
 	"devDependencies": {

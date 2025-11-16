@@ -1,8 +1,7 @@
 import { Elysia, t } from 'elysia';
-import { webhookSchema } from '../schemas/webhook.schema';
-import { validationErrorSchema } from '../schemas/payment.schema';
-import { di } from '../plugins/di';
+import { di } from '../plugins';
 import { errorResponse } from '../helpers/response';
+import { validationErrorSchema, webhookSchema } from '../schemas';
 
 /**
  * Контроллер для обработки webhook от платёжного провайдера

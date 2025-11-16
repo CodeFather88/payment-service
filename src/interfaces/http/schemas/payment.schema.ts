@@ -92,25 +92,6 @@ export const paymentHistoryResponseSchema = t.Object({
   title: 'PaymentHistory'
 });
 
-/**
- * Схема ошибки валидации
- */
-export const validationErrorSchema = t.Object({
-  error: t.String({ description: 'Описание ошибки' }),
-  details: t.Optional(t.Any({ description: 'Детали ошибок валидации' }))
-}, {
-  title: 'ValidationError'
-});
-
-/**
- * Схема общей ошибки
- */
-export const errorSchema = t.Object({
-  error: t.String({ description: 'Описание ошибки' })
-}, {
-  title: 'Error'
-});
-
 export type CreatePaymentDto = Static<typeof createPaymentSchema>;
 export type CreatePaymentResponseDto = Static<typeof createPaymentResponseSchema>;
 export type PaymentLinkResponseDto = Static<typeof paymentLinkResponseSchema>;

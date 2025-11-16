@@ -6,9 +6,9 @@ import {
   paymentLinkResponseSchema,
   paymentHistoryResponseSchema,
   validationErrorSchema,
-  errorSchema 
-} from '../schemas/payment.schema';
-import { di } from '../plugins/di';
+  errorSchema,
+} from '../schemas';
+import { di } from '../plugins';
 import { errorResponse, jsonResponse } from '../helpers/response';
 
 /**
