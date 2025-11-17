@@ -4,7 +4,7 @@ import { InMemoryEventStore } from "../../../infrastructure/InMemoryEventStore";
 import { env } from "../../../configs";
 
 /**
- * DI контейнер создает синглтоны для всего приложения
+ * DI контейнер создает синглтоны для всего приложения, но можно использовать сторонние либы для организации DI
  */
 const eventStore = new InMemoryEventStore();
 const paymentService = new PaymentService(eventStore, env.paymentLinkDomain);
